@@ -27,15 +27,15 @@ default_args = {
 
 @dag(
     # basic setting for all dags
-    dag_id='youbike_up_load_to_gcs',
+    dag_id='youbike_pipeline_create_src_ods',
     default_args=default_args,
     schedule_interval=None,
     start_date=datetime(2024, 4, 10),
-    tags=["Youbike", "one_time"],
+    tags=["Youbike", "one_time", "src" , "ods"],
     on_success_callback=dag_success_alert,  # 在 DAG 成功時調用
     on_failure_callback=task_failure_alert,   # 在 DAG 失敗時調用
     catchup=False)
-def DAG_bike_pipeline():
+def DAG_bike_pipeline_src_ods():
     # setup the client that will be use in the dags
 
     BQ_CLIENT = bigquery.Client()
@@ -69,4 +69,4 @@ def DAG_bike_pipeline():
 
 
 # this actually runs the whole DAG
-DAG_bike_pipeline()
+DAG_bike_pipeline_src_ods()
