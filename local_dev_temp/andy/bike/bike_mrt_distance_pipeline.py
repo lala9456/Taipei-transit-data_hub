@@ -19,7 +19,7 @@ def query_bq_to_df(client: bigquery.Client, sql_query: str) -> pd.DataFrame:
 def get_mrt_df(client):
     mrt_sql_query = """  
         SELECT mrt_station_id,lat,lng
-        FROM `MRT_GCS_to_BQ_SRC_ODS_DIM.DIM_MRT_static_data`
+        FROM `ANDY_ETL_DIM.DIM_MRT_static_data`
     """
     return (query_bq_to_df(client=client, sql_query=mrt_sql_query))
 
@@ -27,7 +27,7 @@ def get_mrt_df(client):
 def get_youbike_df(client):
     youbike_df_sql_query = """  
         SELECT  bike_station_id,lat,lng 
-        FROM `ETL_DIM.DIM_bike_station`
+        FROM `ANDY_ETL_DIM.DIM_bike_station`
     """
     return (query_bq_to_df(client=client, sql_query=youbike_df_sql_query))
 
@@ -35,7 +35,7 @@ def get_youbike_df(client):
 def get_bus_df(client):
     bus_sql_query = """  
         SELECT  bus_station_id,lat,lng
-        FROM `BUS_GCS_to_BQ_SRC_ODS_DIM.DIM_Bus_static_data`
+        FROM `ANDY_ETL_DIM.DIM_Bus_static_data`
     """
     return (query_bq_to_df(client=client, sql_query=bus_sql_query))
 
@@ -128,7 +128,8 @@ def upload_df_to_bq(
 
 
 if __name__ == "__main__":
-    BIGQUERY_CREDENTIALS_FILE_PATH = r"D:\data_engineer\dev_TIR_group2\Taipei-transit-data_hub\airflow\dags\harry_GCS_BigQuery_write_cred.json"
+    # BIGQUERY_CREDENTIALS_FILE_PATH = r"D:\data_engineer\dev_TIR_group2\Taipei-transit-data_hub\airflow\dags\harry_GCS_BigQuery_write_cred.json"
+    BIGQUERY_CREDENTIALS_FILE_PATH = r"D:\TIR_101_group2_project_andy\Taipei-transit-data_hub\airflow\gcp_credentials\andy-gcs_key.json"
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = BIGQUERY_CREDENTIALS_FILE_PATH
     BQ_CLIENT = bigquery.Client()
     # mrt
@@ -137,7 +138,7 @@ if __name__ == "__main__":
     youbike_mrt_distance = create_bike_mrt_distance(
         mrt_df=mrt_df, youbike_df=youbike_df)
     youbike_mrt_distance.to_csv(
-        "youbike_mrt_distance.csv", index=False, encoding="utf-8-sig")
+        r"D:\TIR_101_group2_project_andy\Taipei-transit-data_hub\local_dev_temp\andy\DA\youbike_mrt_distance.csv", index=False, encoding="utf-8-sig")
 
     youbike_mrt_distance_schema = [
         bigquery.SchemaField("bike_station_id", "INT64"),
@@ -146,8 +147,8 @@ if __name__ == "__main__":
     ]
     upload_df_to_bq(client=BQ_CLIENT,
                     df=youbike_mrt_distance,
-                    dataset_name="ETL_FACT",
-                    table_name="FACT_youbike_mrt_distance",
+                    dataset_name="ANDY_ETL_DIM",
+                    table_name="DIM_youbike_mrt_distance",
                     schema=youbike_mrt_distance_schema,
                     filetype="csv",)
     # bus
@@ -155,7 +156,7 @@ if __name__ == "__main__":
     youbike_bus_distance = create_bike_bus_distance(
         youbike_df=youbike_df, bus_df=bus_df)
     youbike_bus_distance.to_csv(
-        "youbike_bus_distance.csv", index=False, encoding="utf-8-sig")
+        r"D:\TIR_101_group2_project_andy\Taipei-transit-data_hub\local_dev_temp\andy\DA\youbike_bus_distance.csv", index=False, encoding="utf-8-sig")
     youbike_bus_distance_schema = [
         bigquery.SchemaField("bike_station_id", "INT64"),
         bigquery.SchemaField("bus_station_id", "STRING"),
@@ -163,7 +164,7 @@ if __name__ == "__main__":
     ]
     upload_df_to_bq(client=BQ_CLIENT,
                     df=youbike_bus_distance,
-                    dataset_name="ETL_FACT",
-                    table_name="FACT_youbike_bus_distance",
+                    dataset_name="ANDY_ETL_DIM",
+                    table_name="DIM_youbike_bus_distance",
                     schema=youbike_bus_distance_schema,
                     filetype="csv",)

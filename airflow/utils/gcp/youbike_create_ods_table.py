@@ -136,15 +136,12 @@ def ODS_youbike_create(dataset_name: str, source_dataset_name: str, create_table
 
 
 if __name__ == "__main__":
-    # youbike_ods_before0504_create()
-    # youbike_ods_after0504_create()
-    # BIGQUERY_CREDENTIALS_FILE_PATH = r"D:\data_engineer\TIR_group2\TIR101_Group2\secrets\harry_GCS_BigQuery_write_cred.json"
-    BIGQUERY_CREDENTIALS_FILE_PATH = r"C:\TIR101_Group2\secrets\harry_GCS_BigQuery_write_cred.json"
+    BIGQUERY_CREDENTIALS_FILE_PATH = r"D:\data_engineer\dev_TIR_group2\Taipei-transit-data_hub\airflow\dags\andy-gcs_key.json"
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = BIGQUERY_CREDENTIALS_FILE_PATH
     BQ_CLIENT = bigquery.Client()
-    ODS_youbike_create(dataset_name="ETL_ODS",
+    ODS_youbike_create(dataset_name="ANDY_ETL_ODS",
                        create_table_name="ODS_youbike_realtime",
-                       source_dataset_name="ETL_SRC",
+                       source_dataset_name="ANDY_ETL_SRC",
                        be_table_name="SRC_youbike_before0504",
                        af_table_name="SRC_youbike_after0504",
                        client=BQ_CLIENT)
