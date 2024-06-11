@@ -5,8 +5,7 @@ from datetime import datetime
 import re
 from io import StringIO
 from google.cloud import storage
-from .utils.gcp.gcs import list_blobs, upload_df_to_gcs
-
+from utils.gcp.gcs import list_blobs, upload_df_to_gcs
 # mrt_usage_history
 # get csv download of every month's data
 # each url can get one month's data
@@ -24,11 +23,12 @@ def get_usage_history_csvfilelist():
     print("get MRT usage history csvfilelist")
     return (url_df)
 
-def get_gcs_filenames_set(client:storage.Client,bucket_name:str):
-    blobs_lists = list_blobs(client=client,bucket_name=bucket_name)  #"mrt_history_usage_andy"
-    gcs_filenames_set = set([lst.name.split("_")[0] for lst in blobs_lists])
-    return(gcs_filenames_set)
 
+def get_gcs_filenames_set(client: storage.Client, bucket_name: str):
+    # "mrt_history_usage_andy"
+    blobs_lists = list_blobs(client=client, bucket_name=bucket_name)
+    gcs_filenames_set = set([lst.name.split("_")[0] for lst in blobs_lists])
+    return (gcs_filenames_set)
 
 
 # def T_mrt_usage_history_one_month_apply_reduce(url):
@@ -118,11 +118,12 @@ def mrt_usage_history_one_month(url: str):
 
 
 if __name__ == "__main__":
-    STORAGE_CREDENTIALS_FILE_PATH = r"D:\TIR_101_group2_project_andy\Taipei-transit-data_hub\airflow\gcp_credentials\andy-gcs_key.json"
+    STORAGE_CREDENTIALS_FILE_PATH = r"D:\data_engineer\dev_TIR_group2\Taipei-transit-data_hub\airflow\gcp_credentials\andy-gcs_key.json"
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = STORAGE_CREDENTIALS_FILE_PATH
     STORAGE_CLIENT = storage.Client()
     api_url_df = get_usage_history_csvfilelist()
-    gcs_filenames_set = get_gcs_filenames_set(client=STORAGE_CLIENT,bucket_name="mrt_history_usage_andy")
+    gcs_filenames_set = get_gcs_filenames_set(
+        client=STORAGE_CLIENT, bucket_name="mrt_history_usage_andy")
     df_need_update = api_url_df.loc[~api_url_df["年月"].isin(gcs_filenames_set),]
 
     for i in range(len(df_need_update)):
@@ -130,7 +131,7 @@ if __name__ == "__main__":
         print(f"we need to update {month}")
         url = df_need_update.loc[i, "URL"]
         df_download_form_api = mrt_usage_history_one_month(url=url)
-        upload_df_to_gcs(client=STORAGE_CLIENT, 
-                         bucket_name="mrt_history_usage_andy", 
-                         blob_name=f"{month}_mrt_history_usage.csv", 
+        upload_df_to_gcs(client=STORAGE_CLIENT,
+                         bucket_name="mrt_history_usage_andy",
+                         blob_name=f"{month}_mrt_history_usage.csv",
                          df=df_download_form_api)

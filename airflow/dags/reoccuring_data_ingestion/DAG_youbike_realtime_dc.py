@@ -9,7 +9,7 @@ import pandas as pd
 import logging
 import pendulum
 import os
-from pathlib import Path
+from pathlib import Pathc
 import sys
 from utils.discord_notify_function import notify_failure, notify_success, dag_success_alert, task_failure_alert
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/opt/airflow/gcp_credentials/andy-gcs_key.json'
